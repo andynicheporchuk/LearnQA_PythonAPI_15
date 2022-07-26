@@ -12,9 +12,10 @@ for i in passwords:
     auth_cookie = response1.cookies["auth_cookie"]
 
     response2 = requests.post("https://playground.learnqa.ru/ajax/api/check_auth_cookie", cookies={"auth_cookie":auth_cookie})
-    print(response2.text)
+
     if response2.text == "You are NOT authorized":
-        print("Пароль неверный")
+        print("Попытка авторизоваться с паролем %s неуспешна, пароль неверен" % i)
+        continue
     else:
-        print("Пароль верный, пароль = %s" % i)
+        print("Попытка авторизоваться с паролем %s успешна, пароль = %s" % (i,i))
         break
