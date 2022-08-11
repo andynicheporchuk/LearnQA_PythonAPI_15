@@ -52,10 +52,11 @@ class TestUserGet(BaseCase):
              cookies={"auth_sid": auth_sid}
         )
 
-        unexpected_fields = ["username", "email", "firstName", "lastName"]
+        unexpected_fields = ["email", "firstName", "lastName"]
 
         Assertion.assert_status_code(response2, 404)
 
+        Assertion.assert_json_has_key(response2, "username")
         Assertion.assert_json_has_not_keys(response2, unexpected_fields)
 
 
