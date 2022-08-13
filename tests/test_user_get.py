@@ -11,6 +11,8 @@ class TestUserGet(BaseCase):
         Assertion.assert_json_has_not_key(response,"email")
         Assertion.assert_json_has_not_key(response,"lastName")
 
+
+
     def test_get_user_details_auth_as_same_user(self):
         data = {
             "email": "vinkotov@example.com",
@@ -31,6 +33,8 @@ class TestUserGet(BaseCase):
         )
 
         expected_fields = ["username","email", "firstName", "lastName"]
+
+
 
         Assertion.assert_json_has_keys(response2, expected_fields)
 

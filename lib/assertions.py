@@ -5,15 +5,15 @@ class Assertion:
     # класс - родитель, и чтобы вызывать метод без создания объекта нужно сделать staticmethod
     @staticmethod
     # убеждаемся что значение внутри json доступно по опред. имени и равно тому, чему мы ожидали
-    def assert_json_value_by_name(response: Response, name, expected_value, error_message):
+    def assert_json_value_by_name(response: Response, name_key, expected_value, error_message):
         try:
             response_as_dict = response.json()
         except json.JSONDecodeError:
             assert False, f"Response is not in JSON Format. Response text is {response.text}"
 
-        assert name in response_as_dict, f"Response JSON has not key {name}"
+        assert name_key in response_as_dict, f"Response JSON has not key {name_key}"
 
-        assert response_as_dict[name] == expected_value, error_message
+        assert response_as_dict[name_key] == expected_value, error_message
 
     @staticmethod
     def assert_json_has_key(response: Response, name):

@@ -2,7 +2,7 @@ import pytest
 import requests
 from lib.base_case import BaseCase
 from lib.assertions import Assertion
-from datetime import datetime
+
 
 class TestUserRegister(BaseCase):
 
@@ -15,20 +15,10 @@ class TestUserRegister(BaseCase):
         ({"username": "testuser","firstName": "learnqa","lastName": "learnqa","email": "testmail@example.com"}),
     ]
 
-    def setup(self):
-        base_part = "learnqa"
-        domain = "example.com"
-        random_part = datetime.now().strftime('%m%d%y%H%M%S')
-        self.email = f"{base_part}{random_part}@{domain}"
 
     def test_create_user_successfully(self):
-        data = {
-            "username": "learnqa",
-            "firstName": "learnqa",
-            "lastName": "learnqa",
-            "email": self.email,
-            "password": "123"
-        }
+        data = self.prepare_registration_data()
+
 
         response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
 
@@ -45,13 +35,7 @@ class TestUserRegister(BaseCase):
 
     def test_create_user_with_existing_email(self):
         email = "vinkotov@example.com"
-        data = {
-            "username": "learnqa",
-            "firstName": "learnqa",
-            "lastName": "learnqa",
-            "email": email,
-            "password": "123"
-        }
+        data = self.prepare_registration_data(email)
 
         response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
 
@@ -103,7 +87,7 @@ class TestUserRegister(BaseCase):
         )
 
         # проверяем, получаем ли мы тот текст ошибки, который ожидаем
-        assert response.content.decode("utf-8") == 'Invalid email format', f"Unexpected response content {response.content}"
+        assert response.content.decode("utf-8") == 'Invalid email format', f"Unexpected response content = {response.content}"
 
     # Создание пользователя с очень коротким именем в один символ
     def test_create_user_with_short_name(self):
@@ -122,18 +106,14 @@ class TestUserRegister(BaseCase):
             400
         )
 
-        assert response.content.decode("utf-8") == "The value of 'firstName' field is too short", f"Unexpected response content {response.content}"
+        assert response.content.decode("utf-8") == "The value of 'firstName' field is too short", f"Unexpected response content = {response.content}"
 
 
     # Создание пользователя с очень длинным именем - длиннее 250 символов
     def test_create_user_with_long_name(self):
-        data = {
-            "username": "learnqa",
-            "firstName": "cfceezjoewecfrfbuckxanrvzpyerakzplmxqhyluqidwjndsiybyccuquaddfkzmibxhpiroxbxxqlonqollaxdbxedzfuxhufvgrqwwytludolgmuwfxjqtfdmijoyhejialkkusvufoijosfzqdbvtllgyaraolxlduptpvmdgmffbmnlqxsdhjndgwzlpqssroasotjoughovdxxsjbrbcktkaxfbbaesbyqcdmgvujcfjdqsmladbasdffghjkl",
-            "lastName": "learnqa",
-            "email": self.email,
-            "password": "123"
-        }
+        data = self.prepare_registration_data()
+
+        data["firstName"] = "cfceezjoewecfrfbuckxanrvzpyerakzplmxqhyluqidwjndsiybyccuquaddfkzmibxhpiroxbxxqlonqollaxdbxedzfuxhufvgrqwwytludolgmuwfxjqtfdmijoyhejialkkusvufoijosfzqdbvtllgyaraolxlduptpvmdgmffbmnlqxsdhjndgwzlpqssroasotjoughovdxxsjbrbcktkaxfbbaesbyqcdmgvujcfjdqsmladbasdffghjkl"
 
         response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
 
@@ -142,7 +122,7 @@ class TestUserRegister(BaseCase):
             400
         )
 
-        assert response.content.decode("utf-8") == "The value of 'firstName' field is too long", f"Unexpected response content {response.content}"
+        assert response.content.decode("utf-8") == "The value of 'firstName' field is too long", f"Unexpected response content = {response.content}"
 
 
 
