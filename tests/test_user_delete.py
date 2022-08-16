@@ -2,9 +2,16 @@ import requests
 from lib.assertions import Assertion
 from lib.base_case import BaseCase
 from lib.my_requests import MyRequests
+import allure
 
-
+@allure.epic("User cases")
 class TestUserDelete(BaseCase):
+
+    @allure.description("Удаление пользователя с id 2")
+    @allure.feature("Действия над пользователями")
+    @allure.story("Удаления пользователя")
+    @allure.severity("minor")
+
     # удалить пользователя по ID 2
     def test_delete_user_with_id_2(self):
         # LOGIN
@@ -21,6 +28,10 @@ class TestUserDelete(BaseCase):
         auth_sid = self.get_cookie(response1, "auth_sid")
         token = self.get_header(response1, "x-csrf-token")
 
+        with allure.step(f"ШАГ ПОСЛЕ POST. куки =  {auth_sid}"):
+           pass
+
+
         # DELETE
         response2 = MyRequests.delete(
             "/user/2",
@@ -31,6 +42,13 @@ class TestUserDelete(BaseCase):
         Assertion.assert_status_code(response2, 400)
 
         assert response2.text == 'Please, do not delete test users with ID 1, 2, 3, 4 or 5.', f"Unexpected response, maybe user deleted"
+
+
+
+    @allure.description("Удаление пользователя, из-под которого авторизован")
+    @allure.feature("Действия над пользователями")
+    @allure.story("Удаления пользователя")
+    @allure.severity("trivial")
 
     #  удалить пользователя, из-под которого авторизован
     def test_delete_user_auth_same_user(self):
@@ -47,7 +65,6 @@ class TestUserDelete(BaseCase):
             "email": email,
             "password": password
         }
-
 
         # LOGIN
 
@@ -83,13 +100,17 @@ class TestUserDelete(BaseCase):
 
         assert response4.text == 'User not found', f"User with id {user_id_from_login} hasn't been deleted"
 
+    @allure.description("Удаление пользователя, будучи авторизованными другим пользователем")
+    @allure.feature("Действия над пользователями")
+    @allure.story("Удаления пользователя")
+    @allure.severity("critical")
     # удалить пользователя, будучи авторизованными другим пользователем
     def test_delete_user_auth_other_user(self):
 
         # REGISTER - Регистрация пользователя
         register_data = self.prepare_registration_data()
 
-        response1 = MyRequests.post('user/', data=register_data)
+        response1 = MyRequests.post('/user/', data=register_data)
 
         email = register_data["email"]
         password = register_data["password"]
@@ -101,10 +122,11 @@ class TestUserDelete(BaseCase):
 
         # LOGIN
 
-        response1 = MyRequests.post("/user/login", data=login_data)
+        response = MyRequests.post("/user/login", data=login_data)
 
-        auth_sid = self.get_cookie(response1, "auth_sid")
-        token = self.get_header(response1, "x-csrf-token")
+
+        auth_sid = self.get_cookie(response, "auth_sid")
+        token = self.get_header(response, "x-csrf-token")
 
 
         # DELETE

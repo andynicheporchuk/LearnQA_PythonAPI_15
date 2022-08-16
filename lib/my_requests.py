@@ -1,4 +1,7 @@
 import requests
+import allure
+from envirnoment import ENV_OBJECT
+
 
 
 class MyRequests():
@@ -6,19 +9,23 @@ class MyRequests():
     #
     @staticmethod
     def get(url: str, params: dict = None, headers: dict = None, cookies: dict = None):
-        return MyRequests._send(url, params, headers, cookies, 'GET')
+        with allure.step(f"GET request to URL '{url}'"):
+            return MyRequests._send(url, params, headers, cookies, 'GET')
 
     @staticmethod
     def post(url:str, data: dict = None, headers: dict = None, cookies: dict = None):
-        return MyRequests._send(url,data,headers,cookies, 'POST')
+        with allure.step(f"POST request to URL '{url}'"):
+            return MyRequests._send(url,data,headers,cookies, 'POST')
 
     @staticmethod
     def put(url:str, data: dict = None, headers: dict = None, cookies: dict = None):
-        return MyRequests._send(url,data,headers,cookies, 'PUT')
+        with allure.step(f"PUT request to URL '{url}'"):
+            return MyRequests._send(url,data,headers,cookies, 'PUT')
 
     @staticmethod
     def delete(url:str, data: dict = None, headers: dict = None, cookies: dict = None):
-        return MyRequests._send(url,data,headers,cookies, 'DELETE')
+        with allure.step(f"DELETE request to URL '{url}'"):
+            return MyRequests._send(url,data,headers,cookies, 'DELETE')
 
 
 
@@ -26,7 +33,7 @@ class MyRequests():
     # _send - приватный метод, которая не должна использоваться извне
     def _send(url:str, data: dict, headers: dict, cookies: dict, method: str):
 
-        url = f"https://playground.learnqa.ru/api/{url}"
+        url = f"{ENV_OBJECT.get_base_url()}{url}"
 
         if headers is None:
             headers = {}
